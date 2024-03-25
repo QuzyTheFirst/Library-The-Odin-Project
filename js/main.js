@@ -1,76 +1,134 @@
-const myLibrary = [];
+class Book{
+    #author;
+    #title;
+    #pages;
+    #read;
 
-function Book(author, title, pages, read) {
-  this.author = author;
-  this.title = title;
-  this.pages = pages;
-  this.read = read;
-}
-
-const dialogWindow = document.querySelector("dialog");
-const openDialogButton = document.querySelector("#newBook");
-const closeDialogButton = document.querySelector("dialog button");
-openDialogButton.addEventListener('click', ()=>{
-    dialogWindow.showModal();
-});
-closeDialogButton.addEventListener('click', () => {
-    dialogWindow.close();
-});
-
-const submitButton = document.querySelector("#submit");
-submitButton.addEventListener('click', (event) => {
-    event.preventDefault();
-
-    addBookToLibrary(getBookFromDialog());
+    constructor(author, title, pages, read){
+        this.#author = author;
+        this.#title = title;
+        this.#pages = pages;
+        this.#read = read ? "I've read" : "I've not read";
+    }
     
-    dialogWindow.close();
-});
-
-function getBookFromDialog(){
-    const title = document.querySelector("dialog #title");
-    const author = document.querySelector("dialog #author");
-    const pages = document.querySelector("dialog #pages");
-    const read = document.querySelector("dialog #read");
-
-    return new Book(author.value, title.value, pages.value, read.checked);
-}
-
-function addBookToLibrary(book) {
-    myLibrary.push(book);
-
-    outputBooksOnPage();
-}
-
-function outputBooksOnPage(){
-    const container = document.querySelector(".books-container");
-    container.innerHTML = "";
+    get author(){
+        return this.#author;
+    }
     
-    for(let i = 0; i < myLibrary.length; i++){
-        const bookCard = document.createElement("div");
-        bookCard.className = "book-card";
+    get title(){
+        return this.#title;
+    }
 
-        const book = myLibrary[i];
-        bookCard.textContent = `${book.title} written by ${book.author}, ${book.pages} pages, ${book.read ? "I've read" : "I've not read"}`;
+    get pages(){
+        return this.#pages;
+    }
 
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "Delete";
-        deleteButton.addEventListener('click', () => {
-            myLibrary.splice(i, 1);
+    get read(){
+        return this.#read ? "I've read" : "I've not read";
+    }
 
-            outputBooksOnPage();
-        });
-
-        const readButton = document.createElement("button");
-        readButton.textContent = "Read Status";
-        readButton.addEventListener('click', () => {
-            myLibrary[i].read = !Boolean(myLibrary[i].read);
-            console.log(myLibrary[i].read);
-
-            outputBooksOnPage();
-        });
-
-        container.appendChild(bookCard);
-        container.appendChild(deleteButton);
-        container.appendChild(readButton);
+    toggleRead(){
+        this.#read = !this.#read;
     }
 }
+
+class Library{
+    #books = [];
+
+    addBook(book){
+        this.#books.push(book);
+    }
+
+    deleteBook(id){
+        this.#books.splice(id, 1);
+    }
+
+    clearLibrary(){
+        this.#books = [];
+    }
+
+    get books(){
+        return this.#books;
+    }
+}
+
+class Screen{
+    #dialogWindow = document.querySelector("dialog");
+    #dialogOpenButton = document.querySelector("#newBook");
+    #dialogCloseButton = document.querySelector("dialog button");
+    #dialogSubmitButton = document.querySelector("#submit");
+
+    #booksContainer = document.querySelector(".books-container");
+
+    #bookTitle = document.querySelector("dialog #title");
+    #bookAuthor = document.querySelector("dialog #author");
+    #bookPages = document.querySelector("dialog #pages");
+    #bookRead = document.querySelector("dialog #read");
+
+    #library;
+
+    constructor(library){
+        this.#library = library;
+    }
+
+    init(){
+        this.#dialogOpenButton.addEventListener('click', ()=>{
+            this.#dialogWindow.showModal();
+        });
+    
+        this.#dialogCloseButton.addEventListener('click', () => {
+            this.#dialogWindow.close();
+        });
+
+        this.#dialogSubmitButton.addEventListener('click', (event) => {
+            event.preventDefault();
+        
+            this.#library.addBook(this.getBookFromDialog());
+            this.outputBooksOnPage();
+            
+            this.#dialogWindow.close();
+        });
+    }
+
+    getBookFromDialog(){
+        return new Book(this.#bookAuthor.value, this.#bookTitle.value, this.#bookPages.value, this.#bookRead.checked);
+    }
+
+    outputBooksOnPage(){
+        this.#booksContainer.innerHTML = "";
+        
+        for(let i = 0; i < this.#library.books.length; i++){
+            const bookCard = document.createElement("div");
+            bookCard.className = "book-card";
+    
+            const book = this.#library.books[i];
+            bookCard.textContent = `${book.title} written by ${book.author}, ${book.pages} pages, ${book.read}`;
+    
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.addEventListener('click', () => {
+                this.#library.deleteBook(i);
+    
+                this.outputBooksOnPage();
+            });
+    
+            const readButton = document.createElement("button");
+            readButton.textContent = "Read Status";
+            readButton.addEventListener('click', () => {
+                this.#library.books[i].toggleRead();
+
+                this.outputBooksOnPage();
+            });
+    
+            this.#booksContainer.appendChild(bookCard);
+            this.#booksContainer.appendChild(deleteButton);
+            this.#booksContainer.appendChild(readButton);
+        }
+    }
+}
+
+(function(){
+    let library = new Library();
+    let screen = new Screen(library);
+    screen.init();
+})();

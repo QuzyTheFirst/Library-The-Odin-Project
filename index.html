@@ -10,34 +10,43 @@
 </head>
 
 <body>
-    <div class="container">
+    <header>
+        <h1>Your Library</h1>
+    </header>
+    <div class="library">
         <dialog>
-            <button autofocus>Close</button>
             <form action="">
                 <ul>
-                    <li><label for="title">Title</label></li>
+                    <li class="field-name"><label for="title">Title</label></li>
                     <li><input type="text" id="title" required></li>
-                    
-                    <li><label for="author">Author</label></li>
+
+                    <li class="field-name"><label for="author">Author</label></li>
                     <li><input type="text" id="author" required></li>
 
-                    <li><label for="pages">Pages</label></li>
+                    <li class="field-name"><label for="pages">Pages</label></li>
                     <li><input type="number" name="" id="pages" required></li>
 
-                    <li><label for="read">Have you read it?</label></li>
+                    <li class="field-name"><label for="read">Have you read it?</label></li>
                     <li><input type="checkbox" name="" id="read"></li>
 
                     <li><output></output></li>
-                    
-                    <li><button type="submit" id="submit">Submit</button></li>
+                    <li>
+                        <ul class="buttons">
+                            <li><button type="submit" id="submit">Submit</button></li>
+                            <li><button autofocus>Close</button></li>
+                        </ul>
+                    </li>
                 </ul>
             </form>
         </dialog>
-        <button id="newBook">New Book</button>
+        <button class="new-book" id="newBook">+</button>
         <div class="books-container">
 
         </div>
     </div>
+    <footer>
+        &copy; Quzy The Developer
+    </footer>
 </body>
 
 </html>
